@@ -18,29 +18,30 @@
       }
     },
 
+    // This function returns the whole row
     rows: function() {
       return _(_.range(this.get('n'))).map(function(rowIndex) {
         return this.get(rowIndex);
       }, this);
     },
-
+    // Toggles the squares value between 1 and 0
     togglePiece: function(rowIndex, colIndex) {
       this.get(rowIndex)[colIndex] = + !this.get(rowIndex)[colIndex];
       this.trigger('change');
     },
-
+    // Moves down diagonally to the left one square
     _getFirstRowColumnIndexForMajorDiagonalOn: function(rowIndex, colIndex) {
       return colIndex - rowIndex;
     },
-
+    // Moves down diagonally to the right one square
     _getFirstRowColumnIndexForMinorDiagonalOn: function(rowIndex, colIndex) {
       return colIndex + rowIndex;
     },
-
+    // Checks all of the squares in a row
     hasAnyRooksConflicts: function() {
       return this.hasAnyRowConflicts() || this.hasAnyColConflicts();
     },
-
+    // Checks both rook and diagonal conflicts
     hasAnyQueenConflictsOn: function(rowIndex, colIndex) {
       return (
         this.hasRowConflictAt(rowIndex) ||
@@ -79,12 +80,44 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      console.log('rowIndex',rowIndex);
+      // var result = false;   // Creates a flag
+      var allRows = this.rows();    // Sets allRows to all of the rows using .rows()
+      var inspectionRow = allRows[rowIndex];  
+      var counter = 0;    // Creates a counter
+      // loop through parent array
+      for (var i = 0; i < inspectionRow.length; i++) {    // Iterate over all rows
+
+        // // if any indexs are set to 1,
+        if (inspectionRow[i] === 1) {   // Checks
+          //console.log('inspectionRow[i]', inspectionRow[i]);
+          counter++;
+        }
+      }
+      console.log('Counter', counter);
+      return counter >= 2; // fixme
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      var result = false;
+      var allRows = this.rows();
+      //loop through array of rows
+      for (var i = 0; i < allRows.length; i++) {
+        //make counter to increment for each row
+        var rowCounter = 0;
+        //loop through inner array (row)
+        for (var j = 0; j < allRows[i].length; j++) {
+          //if any rows has a '1', then increment rowCounter
+          if (allRows[i][j] === 1) {
+            rowCounter++;
+          }
+        }
+        if (rowCounter >= 2) {
+          result = true;
+        }
+      }
+      return result; // fixme
     },
 
 
@@ -99,6 +132,34 @@
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
+      var result = false;
+      var boardLength = this.get('n');
+      var colCount = 0;
+      var allRows = this.rows();
+      for( var i = 0; i < allRows.length; i++) {
+        var currentCount = 0;
+        if (allRows[colCount][i] === 1) {
+          currentCount++;
+        }
+        colCount++;
+        if (allRows[colCount][i] === 1) {
+          currentCount++;
+        }
+        colCount++;
+        if (allRows[colCount][i] === 1) {
+          currentCount++;
+        }
+        colCount++;
+        if (currentCount >= 2) {
+          result = true;
+        }
+
+
+      }
+// console.log('this.get', this.get('n'));
+      // var allCol  =
+
+
       return false; // fixme
     },
 

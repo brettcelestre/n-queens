@@ -19,14 +19,14 @@ describe("Board", function() {
     });
   };
 
-  describe("Empty board", function() {
-    verifyConflictTypes([''], [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ]);
-  });
+  // describe("Empty board", function() {
+  //   verifyConflictTypes([''], [
+  //     [0, 0, 0, 0],
+  //     [0, 0, 0, 0],
+  //     [0, 0, 0, 0],
+  //     [0, 0, 0, 0]
+  //   ]);
+  // });
 
   describe("Board with row conflicts", function() {
     verifyConflictTypes(['row', 'rooks', 'queens'], [
