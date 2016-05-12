@@ -8,9 +8,9 @@
 
     initialize: function (params) {
       if (_.isUndefined(params) || _.isNull(params)) {
-        console.log('Good guess! But to use the Board() constructor, you must pass it an argument in one of the following formats:');
-        console.log('\t1. An object. To create an empty board of size n:\n\t\t{n: %c<num>%c} - Where %c<num> %cis the dimension of the (empty) board you wish to instantiate\n\t\t%cEXAMPLE: var board = new Board({n:5})', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: grey;');
-        console.log('\t2. An array of arrays (a matrix). To create a populated board of size n:\n\t\t[ [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...] ] - Where each %c<val>%c is whatever value you want at that location on the board\n\t\t%cEXAMPLE: var board = new Board([[1,0,0],[0,1,0],[0,0,1]])', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: grey;');
+        // console.log('Good guess! But to use the Board() constructor, you must pass it an argument in one of the following formats:');
+        // console.log('\t1. An object. To create an empty board of size n:\n\t\t{n: %c<num>%c} - Where %c<num> %cis the dimension of the (empty) board you wish to instantiate\n\t\t%cEXAMPLE: var board = new Board({n:5})', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: grey;');
+        // console.log('\t2. An array of arrays (a matrix). To create a populated board of size n:\n\t\t[ [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...] ] - Where each %c<val>%c is whatever value you want at that location on the board\n\t\t%cEXAMPLE: var board = new Board([[1,0,0],[0,1,0],[0,0,1]])', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: grey;');
       } else if (params.hasOwnProperty('n')) {
         this.set(makeEmptyMatrix(this.get('n')));
       } else {
@@ -29,11 +29,11 @@
       this.get(rowIndex)[colIndex] = + !this.get(rowIndex)[colIndex];
       this.trigger('change');
     },
-    // Moves down diagonally to the left one square
+    // Moves down diagonally to the right one square
     _getFirstRowColumnIndexForMajorDiagonalOn: function(rowIndex, colIndex) {
       return colIndex - rowIndex;
     },
-    // Moves down diagonally to the right one square
+    // Moves down diagonally to the left one square
     _getFirstRowColumnIndexForMinorDiagonalOn: function(rowIndex, colIndex) {
       return colIndex + rowIndex;
     },
@@ -80,14 +80,12 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      console.log('rowIndex',rowIndex);
       // var result = false;   // Creates a flag
       var allRows = this.rows();    // Sets allRows to all of the rows using .rows()
       var inspectionRow = allRows[rowIndex];  
       var counter = 0;    // Creates a counter
       // loop through parent array
       for (var i = 0; i < inspectionRow.length; i++) {    // Iterate over all rows
-
         // // if any indexs are set to 1,
         if (inspectionRow[i] === 1) {   // Checks
           //console.log('inspectionRow[i]', inspectionRow[i]);
@@ -127,42 +125,64 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      // Review hasAnyColConflict's function, take out recursive subroutine
+      // and replace rowCount with colIndex and just iterate once over that
+      var result = false;
+      //boardLength stores the width of the board
+      var boardLength = this.get('n');
+      //make an array of the board rows
+      var allRows = this.rows();
+      for( var i = 0; i < allRows.length; i++) {
+        var currentCount = 0;
+        if (allRows[i][colIndex] === 1) {
+          currentCount++;
+        }
+        if (currentCount >= 2) {
+          result = true;
+        }
+      }
+      return result;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
       var result = false;
+      //boardLength stores the width of the board
       var boardLength = this.get('n');
-      var colCount = 0;
+      //the current row we are checking as we go through the rows
+      var rowCount = 0;
+      //make an array of the board rows
       var allRows = this.rows();
+      //loop through all of the rows (uses rowCount)
+      //'i' = the current column spot
       for( var i = 0; i < allRows.length; i++) {
+        //checks the amount of queens in the curent column
         var currentCount = 0;
-        if (allRows[colCount][i] === 1) {
-          currentCount++;
-        }
-        colCount++;
-        if (allRows[colCount][i] === 1) {
-          currentCount++;
-        }
-        colCount++;
-        if (allRows[colCount][i] === 1) {
-          currentCount++;
-        }
-        colCount++;
+        //subroutine that iterates through the rows and checks the same column
+        var colCheck = function(num) {
+          //base case
+          if (num === 0) {
+            return;
+          }
+          //checks whether current column in this row = 1.
+          if (allRows[rowCount][i] === 1) {
+            currentCount++;
+          }
+          //increments the row forward by one index
+          rowCount++;
+          num--;
+          colCheck(num);
+        };
+        //invoke colCheck with boardLength which decides how many times to recurse
+        colCheck(boardLength);
         if (currentCount >= 2) {
           result = true;
         }
-
-
+        //reset to '0' before the loop's next iteration
+        rowCount = 0;
       }
-// console.log('this.get', this.get('n'));
-      // var allCol  =
-
-
-      return false; // fixme
+      return result;
     },
-
 
 
     // Major Diagonals - go from top-left to bottom-right
@@ -170,12 +190,53 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var result = false;
+
+
+
+
+      return result;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      var result = false;   // Sets up a results boolean
+      var allRows = this.rows();    // Saves all of the boards rows in allRows
+      var colIndex = 0;   // Stores colIndex
+      var rowIndex = 0;   // Stores rowIndex
+      var boardLength = this.get('n');  // Stores the length of of the board
+      for( var i = 0; i < allRows.length; i++) {    // Iterate over all of the rows
+        // Stores the current amount of queens in this column
+        var currentCount = 0;
+        // Checks if any of the top rows contain any 1's
+        if (allRows[rowIndex][i] === 1) {
+          // Subroutine that iterates through the rows and checks the next column down
+          var rowCount = 0;
+          var colCount = 0;
+          var colCheck = function(num) {
+            // console.log('rowCount', rowCount);
+            // console.log('colCount', colCount);
+            // Base case, checks if num is zero or if we've run off the board
+            if (num === 0 || allRows[rowCount][colCount] === undefined) {
+              return;
+            }
+            // Checks whether current column in this row = 1.
+            if (allRows[rowCount][colCount] === 1) {
+              currentCount++;   // Increments the current number of queens
+            }
+            colCount++;   // Increments the col forward by one index
+            rowCount++;   // Increments the row forward by one index
+            num--;        // Decrements num
+            colCheck(num);  // Recursivily calls colCheck with the current num amount
+          };
+          //invoke colCheck with boardLength which decides how many times to recurse
+          colCheck(boardLength);
+          if (currentCount >= 2) {    // Checks if there are more than 1 queens in the 
+            result = true;            // diagonal row, sets results to true
+          }
+        }
+      }
+      return result; // fixme
     },
 
 
@@ -185,13 +246,60 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var result = false;
+
+
+      return result;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var result = false;
+      var result = false;   // Sets up a results boolean
+      var allRows = this.rows();    // Saves all of the boards rows in allRows
+      var colIndex = allRows.length-1;   // Stores colIndex
+      var rowIndex = 0;   // Stores rowIndex
+      var boardLength = this.get('n');  // Stores the length of of the board
+      for( var i = allRows.length-1; i >= 0; i--) {    // Iterate over all of the rows
+        // console.log('rowCount', rowCount);
+        // console.log('colCount', colCount);
+        // Stores the current amount of queens in this column
+        var currentCount = 0;
+        // Checks if any of the top rows contain any 1's
+        if (allRows[rowIndex][colIndex] === 1) {
+          var rowCount = rowIndex;
+          var colCount = colIndex;
+          // Subroutine that iterates through the rows and checks the next column down
+          var colCheck = function(num) {
+            // Base case, checks if num is zero or if we've run off the board
+            console.log('rowCount', rowCount);
+            console.log('colCount', colCount);
+            //console.log('allRows everything', allRows[rowCount][colCount]);
+            if (num === 0 || allRows[rowCount][colCount] === undefined) {
+              return;
+            }
+            // Checks whether current column in this row = 1.
+            if (allRows[rowCount][colCount] === 1) {
+              currentCount++;   // Increments the current number of queens
+            }
+            colCount && colCount--;   // Decrements the col forward by one index
+            if (rowCount <= boardLength){
+              rowCount++;   // Increments the row forward by one index
+            }
+            num && num--;        // Decrements num
+            colCheck(num);  // Recursivily calls colCheck with the current num amount
+          };
+          //invoke colCheck with boardLength which decides how many times to recurse
+          colCheck(boardLength);
+          if (currentCount >= 2) {    // Checks if there are more than 1 queens in the 
+            result = true;            // diagonal row, sets results to true
+          }
+        }
+        rowIndex++;
+      }
+      return result; // fixme
     }
+
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
