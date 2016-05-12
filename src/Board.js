@@ -92,7 +92,6 @@
           counter++;
         }
       }
-      console.log('Counter', counter);
       return counter >= 2; // fixme
     },
 
@@ -132,8 +131,8 @@
       var boardLength = this.get('n');
       //make an array of the board rows
       var allRows = this.rows();
+      var currentCount = 0;
       for( var i = 0; i < allRows.length; i++) {
-        var currentCount = 0;
         if (allRows[i][colIndex] === 1) {
           currentCount++;
         }
