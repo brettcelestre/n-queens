@@ -209,25 +209,23 @@
       var allRows = this.rows();    // Saves all of the boards rows in allRows
       var colIndex = 0;   // Stores colIndex
       var rowIndex = 0;   // Stores rowIndex
-      var rowCount = 0;
-      var colCount = 0;
       var boardLength = this.get('n');  // Stores the length of of the board
       var rowIncrementSystem = function(amount) {
-        if ( amount === boardLength ){
+        if ( amount === boardLength-1 ){
           return;
         }
         for( var i = 0; i < allRows.length; i++) {    // Iterate over all of the rows
           // Stores the current amount of queens in this column
           var currentCount = 0;
-          colCount = i;
-          //var colCount = parseInt(colCountHolder);
           // Checks if any of the top rows contain any 1's
           if (allRows[rowIndex][i] === 1) {
+            var rowCount = rowIndex;
+            var colCount = i;
 
             // Subroutine that iterates through the rows
             var colCheck = function(num) {
               // Base case, checks if num is zero or if we've run off the board
-              if (num === 0 || allRows[rowCount][colCount] === undefined) {
+              if (num === 0 || rowCount > (boardLength - 1) ||allRows[rowCount][colCount] === undefined ){//allRows[rowCount][colCount] !== 0 || allRows[rowCount][colCount] !== 1) { //allRows[rowCount][colCount] === undefined
                 return;
               }
               // Checks whether current column in this row = 1.
@@ -235,18 +233,20 @@
                 currentCount++;   // Increments the current number of queens
               }
               colCount++;   // Increments the col forward by one index
+
               rowCount++;   // Increments the row forward by one index
-              num--;        // Decrements num
-              colCheck(num);  // Recursivily calls colCheck with the current num amount
+
+              colCheck(--num);  // Recursivily calls colCheck with the current num amount
             };
             //invoke colCheck with boardLength which decides how many times to recurse
-            colCheck(boardLength);
+            colCheck(boardLength - colCount);
             if (currentCount >= 2) {    // Checks if there are more than 1 queens in the 
               result = true;            // diagonal row, sets results to true
             }
-          }
-          // colCount++;
-        }
+
+          }//end if statement
+
+        }//end for loop
         
         rowIndex++;
         rowIncrementSystem(rowIndex);
@@ -278,34 +278,48 @@
       var rowCount = 0;
       var colCount = allRows.length - 1;
       var boardLength = this.get('n');  // Stores the length of of the board
-      for( var i = allRows.length-1; i > 0; i--) {    // Iterate over all of the rows
-        // Stores the current amount of queens in this column
-        var currentCount = 0;
-        // Checks if any of the top rows contain any 1's
-        if (allRows[rowIndex][colIndex] === 1) {
-          // Subroutine that iterates through the rows and checks the next column down
-          var colCheck = function(num) {
-            // Base case, checks if num is zero or if we've run off the board
-            if (num === 0 || allRows[rowCount][colCount] === undefined) {
-              return;
-            }
-            // Checks whether current column in this row = 1.
-            if (allRows[rowCount][colCount] === 1) {
-              currentCount++;   // Increments the current number of queens
-            }
-            colCount--;   // Decrements the col forward by one index
-            rowCount++;   // Increments the row forward by one index
-            num--;        // Decrements num
-            colCheck(num);  // Recursivily calls colCheck with the current num amount
-          };
-          //invoke colCheck with boardLength which decides how many times to recurse
-          colCheck(boardLength);
-          if (currentCount >= 2) {    // Checks if there are more than 1 queens in the 
-            result = true;            // diagonal row, sets results to true
-          }
+      var rowDecrementSystem = function(amount) {
+        if ( amount === boardLength-1 ){
+          return;
         }
-        colIndex--;
-      }
+       for( var i = 0; i < allRows.length; i++) {    // Iterate over all of the rows
+          // Stores the current amount of queens in this column
+          var currentCount = 0;
+          // Checks if any of the top rows contain any 1's
+          if (allRows[rowIndex][i] === 1) {
+            var rowCount = rowIndex;
+            var colCount = i;
+
+            // Subroutine that iterates through the rows
+            var colCheck = function(num) {
+              // Base case, checks if num is zero or if we've run off the board
+              if (num === 0 || rowCount > (boardLength - 1) || colCount < 0 ||allRows[rowCount][colCount] === undefined ){
+                return;
+              }
+              // Checks whether current column in this row = 1.
+              if (allRows[rowCount][colCount] === 1) {
+                currentCount++;   // Increments the current number of queens
+              }
+              colCount--;   // Increments the col forward by one index
+
+              rowCount++;   // Increments the row forward by one index
+
+              colCheck(--num);  // Recursivily calls colCheck with the current num amount
+            };
+            //invoke colCheck with boardLength which decides how many times to recurse
+            colCheck(boardLength - rowCount);
+            if (currentCount >= 2) {    // Checks if there are more than 1 queens in the 
+              result = true;            // diagonal row, sets results to true
+            }
+
+          }//end if statement
+
+        }//end for loop
+        rowIndex++;
+        rowDecrementSystem(rowIndex);
+      };
+
+      rowDecrementSystem(rowIndex);
       return result; // fixme
     }
 
